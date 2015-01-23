@@ -1,6 +1,26 @@
 {
   "name": "dedom",
   "version": "0.0.1",
+  "description": "A partial implementation of the W3C DOM API on top of an HTML5 parser and serializer.",
+  "keywords": [
+    "dom",
+    "w3c"
+  ],
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "https://github.com/mbostock/dedom/blob/master/LICENSE"
+    }
+  ],
+  "author": {
+    "name": "Mike Bostock",
+    "url": "http://bost.ocks.org/mike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbostock/dedom.git"
+  },
+  "main": "index.js",
   "dependencies": {
     "parse5": "1"
   }
