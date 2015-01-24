@@ -1,16 +1,14 @@
 var Node = require("./node");
 
-// TODO NamedNodeMap should support array indexing
 exports.getAttrList = function(node) {
-  return [];
+  var i = -1, n = node.attributes.length, a, array = new Array(n);
+  while (++i < n) array[i] = {name: (a = node.attributes.item(i)).nodeName, value: a.nodeValue};
+  return array;
 };
 
-// TODO NodeList should support array indexing
 exports.getChildNodes = function(node) {
-  var i = -1,
-      n = node.childNodes.length,
-      array = new Array(n);
-  while (++i < n) array[i] = node.childNodes.item(i);
+  var array = [], child = node.firstChild;
+  while (child) array.push(child), child = child.nextSibling;
   return array;
 };
 

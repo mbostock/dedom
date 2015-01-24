@@ -1,19 +1,18 @@
-var Node = require("./node");
+var NamedNodeMap = require("./named-node-map"),
+    Node = require("./node");
 
-function DocumentType() {
-  throw new TypeError("Illegal constructor");
+function DocumentType(_, ownerDocument, name, publicId, systemId) {
+  Node.call(this, _, ownerDocument, name, null, Node.DOCUMENT_TYPE_NODE);
+  Object.defineProperties(this, {
+    entities: {value: new NamedNodeMap(_)},
+    notations: {value: new NamedNodeMap(_)},
+    publicId: {value: publicId},
+    systemId: {value: systemId}
+  });
 }
 
-DocumentType.prototype = Object.create(Node.prototype);
-
-// DOM Level 1
-// readonly attribute  DOMString            name;
-// readonly attribute  NamedNodeMap         entities;
-// readonly attribute  NamedNodeMap         notations;
-
-// DOM Level 2
-// readonly attribute DOMString        publicId;
-// readonly attribute DOMString        systemId;
-// readonly attribute DOMString        internalSubset;
+var prototype = DocumentType.prototype = Object.create(Node.prototype, {
+  name: {get: function() { return this.nodeName; }}
+});
 
 module.exports = DocumentType;

@@ -1,9 +1,12 @@
-var CharacterData = require("./character-data");
+var CharacterData = require("./character-data"),
+    Node = require("./node");
 
-function Comment() {
-  throw new TypeError("Illegal constructor");
+function Comment(_, ownerDocument, data) {
+  CharacterData.call(this, _, ownerDocument, "#comment", data, Node.COMMENT_NODE);
 }
 
-Comment.prototype = Object.create(CharacterData.prototype);
+var prototype = Comment.prototype = Object.create(CharacterData.prototype);
+
+prototype.constructor = Comment;
 
 module.exports = Comment;

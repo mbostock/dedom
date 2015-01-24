@@ -1,5 +1,23 @@
-function Node() {
-  throw new TypeError("Illegal constructor");
+var secret = require("./secret"),
+    DOMException = require("./dom-exception"),
+    NodeList = require("./node-list"),
+    NamedNodeMap = require("./named-node-map");
+
+function Node(_, ownerDocument, nodeName, nodeValue, nodeType) {
+  if (_ !== secret) throw new TypeError("Illegal constructor");
+  Object.defineProperties(this, {
+    _parent: {writable: true},
+    _first: {writable: true},
+    _last: {writable: true},
+    _next: {writable: true},
+    _previous: {writable: true},
+    _children: {value: new NodeList(_, this)},
+    _attributes: {value: new NamedNodeMap(_)},
+    nodeName: {enumerable: true, value: nodeName},
+    nodeValue: {enumerable: true, value: nodeValue}, // TODO this should be writable (sometimes)!
+    nodeType: {enumerable: true, value: nodeType},
+    ownerDocument: {enumerable: true, value: ownerDocument}
+  });
 }
 
 Node.ELEMENT_NODE = 1;
@@ -15,38 +33,48 @@ Node.DOCUMENT_TYPE_NODE = 10;
 Node.DOCUMENT_FRAGMENT_NODE = 11;
 Node.NOTATION_NODE = 12;
 
-Node.prototype.insertBefore = function(newChild, refChild) {
+var prototype = Node.prototype = Object.create(Object.prototype, {
+  parentNode: {get: function() { return this._parent; }},
+  childNodes: {get: function() { return this._children; }},
+  firstChild: {get: function() { return this._first; }},
+  lastChild: {get: function() { return this._last; }},
+  nextSibling: {get: function() { return this._next; }},
+  previousSibling: {get: function() { return this._previous; }},
+  attributes: {get: function() { return this._attributes; }}
+});
+
+prototype.constructor = Node;
+
+prototype.insertBefore = function(newChild, refChild) {
   throw new Error("not yet implemented");
 };
 
-Node.prototype.replaceChild = function(newChild, oldChild) {
+prototype.replaceChild = function(newChild, oldChild) {
   throw new Error("not yet implemented");
 };
 
-Node.prototype.removeChild = function(oldChild) {
-  if (oldChild._parent !== this) throw new Error; // TODO DOMException
-  if (oldChild._previous) oldChild._previous._next = oldChild._next;
-  else this._first = oldChild._next;
-  if (oldChild._next) oldChild._next._previous = oldChild._previous;
-  else this._last = oldChild._previous;
+prototype.removeChild = function(oldChild) {
+  if (oldChild._parent !== this) throw new DOMException(secret, DOMException.HIERARCHY_REQUEST_ERR);
+  if (oldChild._previous) oldChild._previous._next = oldChild._next; else this._first = oldChild._next;
+  if (oldChild._next) oldChild._next._previous = oldChild._previous; else this._last = oldChild._previous;
   oldChild._previous = oldChild._next = oldChild._parent = null;
   return oldChild;
 };
 
-Node.prototype.appendChild = function(newChild) {
+prototype.appendChild = function(newChild) {
   if (newChild._parent) newChild._parent.removeChild(newChild);
   newChild._parent = this;
   if (newChild._previous = this._last) this._last._next = newChild;
-  this._last = newChild;
   if (!this._first) this._first = newChild;
+  this._last = newChild;
   return newChild;
 };
 
-Node.prototype.hasChildNodes = function() {
+prototype.hasChildNodes = function() {
   return !!this._first;
 };
 
-Node.prototype.cloneNode = function(deep) {
+prototype.cloneNode = function(deep) {
   throw new Error("not yet implemented");
 };
 

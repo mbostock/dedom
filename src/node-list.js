@@ -1,17 +1,28 @@
-// TODO support array indexing
+var secret = require("./secret");
 
-function NodeList() {
-  throw new TypeError("Illegal constructor");
+function NodeList(_, node) {
+  if (_ !== secret) throw new TypeError("Illegal constructor");
+  Object.defineProperties(this, {
+    _node: {value: node}
+  });
 }
 
-// readonly attribute  unsigned long        length;
+var prototype = NodeList.prototype = Object.create(Object.prototype, {
+  length: {
+    get: function() {
+      var length = 0, node = this._node._first;
+      while (node) ++length, node = node._next;
+      return length;
+    }
+  }
+});
 
-NodeList.prototype.item = function(index) {
-  var length = 0,
-      node = this._node._first;
+prototype.constructor = NodeList;
+
+prototype.item = function(index) {
+  var length = 0, node = this._node._first;
   while (node) {
-    if (length >= index) return node;
-    ++length;
+    if (++length > index) return node;
     node = node._next;
   }
   return null;

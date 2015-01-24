@@ -1,8 +1,9 @@
-function DOMException() {
-  throw new TypeError("Illegal constructor");
-}
+var secret = require("./secret");
 
-// unsigned short   code;
+function DOMException(_, code) {
+  if (_ !== secret) throw new TypeError("Illegal constructor");
+  this.code = code;
+}
 
 DOMException.INDEX_SIZE_ERR = 1;
 DOMException.DOMSTRING_SIZE_ERR = 2;

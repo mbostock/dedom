@@ -1,9 +1,11 @@
 var Node = require("./node");
 
-function DocumentFragment() {
-  throw new TypeError("Illegal constructor");
+function DocumentFragment(_, ownerDocument) {
+  Node.call(this, _, ownerDocument, "#document-fragment", null, Node.DOCUMENT_FRAGMENT_NODE);
 }
 
-DocumentFragment.prototype = Object.create(Node.prototype);
+var prototype = DocumentFragment.prototype = Object.create(Node.prototype);
+
+prototype.constructor = DocumentFragment;
 
 module.exports = DocumentFragment;

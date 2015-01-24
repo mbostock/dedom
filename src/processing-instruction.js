@@ -1,13 +1,15 @@
 var Node = require("./node");
 
-function ProcessingInstruction() {
-  throw new TypeError("Illegal constructor");
+function ProcessingInstruction(_, ownerDocument, target, data) {
+  Node.call(this, _, ownerDocument, "#processing-instruction", null, Node.PROCESSING_INSTRUCTION_NODE);
+  Object.defineProperties(this, {
+    target: {enumerable: true, value: target},
+    data: {enumerable: true, writable: true, value: data}
+  });
 }
 
-// readonly attribute  DOMString            target;
-//          attribute  DOMString            data;
-//                                     // raises(DOMException) on setting
+var prototype = ProcessingInstruction.prototype = Object.create(Node.prototype);
 
-ProcessingInstruction.prototype = Object.create(Node.prototype);
+prototype.constructor = ProcessingInstruction;
 
 module.exports = ProcessingInstruction;

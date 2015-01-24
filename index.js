@@ -23,7 +23,9 @@ var Attr = exports.Attr = require("./src/attr.js"),
     Text = exports.Text = require("./src/text.js");
 
 exports.parse = function(html) {
-  return new parse5.Parser(parserAdapter()).parse(html);
+  var adapter = parserAdapter();
+  new parse5.Parser(adapter).parse(html);
+  return adapter.document;
 };
 
 exports.serialize = function(document) {

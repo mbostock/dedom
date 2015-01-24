@@ -1,51 +1,75 @@
-var Comment = require("./comment"),
+var secret = require("./secret"),
+    Attr = require("./attr"),
+    Comment = require("./comment"),
+    CDATASection = require("./cdata-section"),
+    DocumentType = require("./document-type"),
+    DOMImplementation = require("./dom-implementation"),
     Element = require("./element"),
+    EntityReference = require("./entity-reference"),
     Node = require("./node"),
+    ProcessingInstruction = require("./processing-instruction"),
     Text = require("./text");
 
-function Document() {
-  throw new TypeError("Illegal constructor");
+function Document(_, name, publicId, systemId) {
+  Node.call(this, _, "#document", null, Node.DOCUMENT_NODE);
+  Object.defineProperties(this, {
+    doctype: {value: new DocumentType(_, this, name, publicId, systemId)},
+    implementation: new DOMImplementation(_)
+  });
 }
 
-// readonly attribute  DocumentType         doctype;
-// readonly attribute  DOMImplementation    implementation;
-// readonly attribute  Element              documentElement;
+var prototype = Document.prototype = Object.create(Node.prototype, {
+  documentElement: {
+    get: function() {
+      var child = this._first;
+      while (child) {
+        if (child.nodeType === Node.ELEMENT_NODE) return child;
+        child = child._next;
+      }
+      return null;
+    }
+  }
+});
 
-Document.prototype = Object.create(Node.prototype);
+prototype.constructor = Document;
 
-Document.prototype.createElement = function(tagName) {
+prototype.createElement = function(tagName) {
   throw new Error("not yet implemented");
 };
 
-Document.prototype.createDocumentFragment = function() {
+prototype.createElementNS = function(namespaceURI, qualifiedName) {
+  return new Element(secret, this, qualifiedName, namespaceURI);
+};
+
+prototype.createDocumentFragment = function() {
   throw new Error("not yet implemented");
 };
 
-Document.prototype.createTextNode = function(data) {
-  throw new Error("not yet implemented");
+prototype.createTextNode = function(data) {
+  return new Text(secret, this, data);
 };
 
-Document.prototype.createComment = function(data) {
-  throw new Error("not yet implemented");
+prototype.createComment = function(data) {
+  return new Comment(secret, this, data);
 };
 
-Document.prototype.createCDATASection = function(data) {
-  throw new Error("not yet implemented");
+prototype.createCDATASection = function(data) {
+  return new CDATASection(secret, this, data);
 };
 
-Document.prototype.createProcessingInstruction = function(target, data) {
-  throw new Error("not yet implemented");
+prototype.createProcessingInstruction = function(target, data) {
+  return new ProcessingInstruction(secret, this, target, data);
 };
 
-Document.prototype.createAttribute = function(name) {
-  throw new Error("not yet implemented");
+prototype.createAttribute = function(name) {
+  return new Attr(secret, this, name, false, "");
 };
 
-Document.prototype.createEntityReference = function(name) {
-  throw new Error("not yet implemented");
+prototype.createEntityReference = function(name) {
+  return new EntityReference(secret, this, name);
 };
 
-Document.prototype.getElementsByTagName = function(tagName) {
+prototype.getElementsByTagName = function(tagName) {
   return this.documentElement.getElementsByTagName(tagName);
 };
 

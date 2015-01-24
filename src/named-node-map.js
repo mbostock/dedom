@@ -1,25 +1,60 @@
-// TODO support array indexing
+var secret = require("./secret");
 
-function NamedNodeMap() {
-  throw new TypeError("Illegal constructor");
+function NamedNodeMap(_) {
+  if (_ !== secret) throw new TypeError("Illegal constructor");
+  Object.defineProperties(this, {
+    _nodes: {value: []}
+  });
 }
 
-// readonly attribute  unsigned long        length;
+var prototype = NamedNodeMap.prototype = Object.create(Object.prototype, {
+  length: {get: function() { return this._nodes.length; }}
+});
 
-NamedNodeMap.prototype.getNamedItem = function(name) {
-  throw new Error("not yet implemented");
+prototype.constructor = NamedNodeMap;
+
+prototype.getNamedItem = function(name) {
+  var node,
+      i = -1,
+      n = this._nodes.length;
+  while (++i < n) {
+    if ((node = this._nodes[i]).nodeName == name) {
+      return node;
+    }
+  }
+  return null;
 };
 
-NamedNodeMap.prototype.setNamedItem = function(arg) {
-  throw new Error("not yet implemented");
+prototype.setNamedItem = function(node) {
+  var name = node.nodeName,
+      oldNode,
+      i = -1,
+      n = this._nodes.length;
+  while (++i < n) {
+    if ((oldNode = this._nodes[i]).nodeName == name) {
+      this._nodes[i] = node;
+      return oldNode;
+    }
+  }
+  this._nodes.push(node);
+  return null;
 };
 
-NamedNodeMap.prototype.removeNamedItem = function(name) {
-  throw new Error("not yet implemented");
+prototype.removeNamedItem = function(name) {
+  var node,
+      i = -1,
+      n = this._nodes.length;
+  while (++i < n) {
+    if ((node = this._nodes[i]).nodeName == name) {
+      this._nodes.splice(i, 1);
+      return node;
+    }
+  }
+  return null;
 };
 
-NamedNodeMap.prototype.item = function(index) {
-  throw new Error("not yet implemented");
+prototype.item = function(index) {
+  return this._nodes[index] || null;
 };
 
 module.exports = NamedNodeMap;

@@ -1,38 +1,47 @@
-var Node = require("./node");
+var secret = require("./secret"),
+    Attr = require("./attr"),
+    Node = require("./node");
 
-function Element() {
-  throw new TypeError("Illegal constructor");
+function Element(_, ownerDocument, name, namespaceURI) {
+  Node.call(this, _, ownerDocument, name, null, Node.ELEMENT_NODE);
+  Object.defineProperties(this, {
+    namespaceURI: {enumerable: true, value: namespaceURI}
+  });
 }
 
-// readonly attribute  DOMString            tagName;
+var prototype = Element.prototype = Object.create(Node.prototype, {
+  tagName: {get: function() { return this.nodeName; }}
+});
 
-Element.prototype = Object.create(Node.prototype);
+prototype.constructor = Element;
 
-Element.prototype.getAttribute = function(name) {
+prototype.getAttribute = function(name) {
+  var attr = this.attributes.getNamedItem(name);
+  return attr && attr.nodeValue;
+};
+
+prototype.setAttribute = function(name, value) {
+  var attr = new Attr(secret, this.ownerDocument, name, true, value);
+  this.attributes.setNamedItem(attr);
+};
+
+prototype.removeAttribute = function(name) {
+  this.attributes.removeNamedItem(name);
+};
+
+prototype.getAttributeNode = function(name) {
   throw new Error("not yet implemented");
 };
 
-Element.prototype.setAttribute = function(name, value) {
+prototype.setAttributeNode = function(newAttr) {
   throw new Error("not yet implemented");
 };
 
-Element.prototype.removeAttribute = function(name) {
+prototype.removeAttributeNode = function(oldAttr) {
   throw new Error("not yet implemented");
 };
 
-Element.prototype.getAttributeNode = function(name) {
-  throw new Error("not yet implemented");
-};
-
-Element.prototype.setAttributeNode = function(newAttr) {
-  throw new Error("not yet implemented");
-};
-
-Element.prototype.removeAttributeNode = function(oldAttr) {
-  throw new Error("not yet implemented");
-};
-
-Element.prototype.getElementsByTagName = function(tagName) {
+prototype.getElementsByTagName = function(tagName) {
   throw new Error("not yet implemented");
   // var results = []; // TODO NodeList
 
@@ -47,7 +56,7 @@ Element.prototype.getElementsByTagName = function(tagName) {
   // return result;
 };
 
-Element.prototype.normalize = function() {
+prototype.normalize = function() {
   throw new Error("not yet implemented");
 };
 

@@ -1,13 +1,16 @@
 var Node = require("./node");
 
-function Entity() {
-  throw new TypeError("Illegal constructor");
+function Entity(_, ownerDocument, name, publicId, systemId, notationName) {
+  Node.call(this, _, ownerDocument, name, null, Node.ENTITY_NODE);
+  Object.defineProperties(this, {
+    publicId: {value: publicId},
+    systemId: {value: systemId},
+    notationName: {value: notationName} // same as name?
+  });
 }
 
-Entity.prototype = Object.create(Node.prototype);
+var prototype = Entity.prototype = Object.create(Node.prototype);
 
-// readonly attribute  DOMString            publicId;
-// readonly attribute  DOMString            systemId;
-// readonly attribute  DOMString            notationName;
+prototype.constructor = Entity;
 
 module.exports = Entity;

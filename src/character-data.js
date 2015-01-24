@@ -1,33 +1,33 @@
 var Node = require("./node");
 
-function CharacterData() {
-  throw new TypeError("Illegal constructor");
+function CharacterData(_, ownerDocument, name, data, type) {
+  Node.call(this, _, ownerDocument, name, data, type);
 }
 
-//          attribute  DOMString            data;
-//                                // raises(DOMException) on setting
-//                                // raises(DOMException) on retrieval
-// readonly attribute  unsigned long        length;
+var prototype = CharacterData.prototype = Object.create(Node.prototype, {
+  length: {get: function() { return this.nodeValue.length; }},
+  data: {get: function() { return this.nodeValue; }} // TODO this should be writable
+});
 
-CharacterData.prototype = Object.create(Node.prototype);
+prototype.constructor = CharacterData;
 
-CharacterData.prototype.substringData = function(offset, count) {
+prototype.substringData = function(offset, count) {
   throw new Error("not yet implemented");
 };
 
-CharacterData.prototype.appendData = function(arg) {
+prototype.appendData = function(arg) {
   throw new Error("not yet implemented");
 };
 
-CharacterData.prototype.insertData = function(offset, arg) {
+prototype.insertData = function(offset, arg) {
   throw new Error("not yet implemented");
 };
 
-CharacterData.prototype.deleteData = function(offset, count) {
+prototype.deleteData = function(offset, count) {
   throw new Error("not yet implemented");
 };
 
-CharacterData.prototype.replaceData = function(offset, count, arg) {
+prototype.replaceData = function(offset, count, arg) {
   throw new Error("not yet implemented");
 };
 

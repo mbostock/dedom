@@ -1,12 +1,15 @@
-var CharacterData = require("./character-data");
+var CharacterData = require("./character-data"),
+    Node = require("./node");
 
-function Text() {
-  throw new TypeError("Illegal constructor");
+function Text(_, ownerDocument, data) {
+  CharacterData.call(this, _, ownerDocument, "#text", data, Node.TEXT_NODE);
 }
 
-Text.prototype = Object.create(CharacterData.prototype);
+var prototype = Text.prototype = Object.create(CharacterData.prototype);
 
-Text.prototype.splitText = function(offset) {
+prototype.constructor = Text;
+
+prototype.splitText = function(offset) {
   throw new Error("not yet implemented");
 };
 
