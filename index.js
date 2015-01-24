@@ -1,6 +1,6 @@
 var parse5 = require("parse5");
 
-var parser = new parse5.Parser(require("./src/parser-adapter")),
+var parserAdapter = require("./src/parser-adapter"),
     serializer = new parse5.Serializer(require("./src/serializer-adapter"));
 
 var Attr = exports.Attr = require("./src/attr.js"),
@@ -22,12 +22,10 @@ var Attr = exports.Attr = require("./src/attr.js"),
     ProcessingInstruction = exports.ProcessingInstruction = require("./src/processing-instruction.js"),
     Text = exports.Text = require("./src/text.js");
 
-// TODO DOMParser?
 exports.parse = function(html) {
-  return parser.parse(html);
+  return new parse5.Parser(parserAdapter()).parse(html);
 };
 
-// TODO XMLSerializer?
 exports.serialize = function(document) {
   return serializer.serialize(document);
 };

@@ -1,3 +1,5 @@
+// TODO support array indexing
+
 function NodeList() {
   throw new TypeError("Illegal constructor");
 }

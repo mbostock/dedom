@@ -1,3 +1,5 @@
+// TODO support array indexing
+
 function NamedNodeMap() {
   throw new TypeError("Illegal constructor");
 }

@@ -6,22 +6,59 @@ var Document = require("./document"),
     NodeList = require("./node-list"),
     Text = require("./text");
 
-var document; // blech, createElement doesn’t know its document
-
-exports.createDocument = function() {
-  document = Object.create(Document.prototype);
-
-  defineNode(document, "#document", null, Node.DOCUMENT_NODE, document);
-
-  return document;
+module.exports = function() {
+  return {
+    createDocument: createDocument,
+    createElement: createElement,
+    setDocumentType: setDocumentType,
+    appendChild: appendChild,
+    getTagName: getTagName,
+    getNamespaceURI: getNamespaceURI,
+    insertText: insertText
+  };
 };
 
-exports.setDocumentType = function(document, name, publicId, systemId) {
+function createDocument() {
+  var document = Object.create(Document.prototype);
+
+  defineNode(document, "#document", null, Node.DOCUMENT_NODE);
+
+  Object.defineProperties(document, {
+    ownerDocument: {
+      enumerable: true,
+      writable: false,
+      value: document
+    }
+  });
+
+  return document;
+}
+
+// Note: ownerDocument and document.documentElement is set on append
+function createElement(tagName, namespaceURI, attrs) {
+  var element = Object.create(Element.prototype);
+
+  defineNode(element, tagName, null, Node.ELEMENT_NODE);
+
+  Object.defineProperties(element, elementAliases);
+  Object.defineProperties(element, {
+    namespaceURI: {
+      enumerable: true,
+      writable: false,
+      value: namespaceURI
+    }
+  });
+
+  return element;
+}
+
+function setDocumentType(document, name, publicId, systemId) {
   var doctype = Object.create(DocumentType.prototype);
 
-  defineNode(doctype, name, null, Node.DOCUMENT_TYPE_NODE, document);
+  defineNode(doctype, name, null, Node.DOCUMENT_TYPE_NODE);
 
   Object.defineProperties(doctype, documentTypeAliases);
+
   Object.defineProperties(doctype, {
     entities: {
       enumerable: true,
@@ -52,51 +89,44 @@ exports.setDocumentType = function(document, name, publicId, systemId) {
       value: doctype
     }
   });
-};
+}
 
-exports.createElement = function(tagName, namespaceURI, attrs) {
-  if (document == null) throw new Error;
-  var element = Object.create(Element.prototype);
+function appendChild(parentNode, newChild) {
+  if (!parentNode.ownerDocument) throw new Error;
 
-  defineNode(element, tagName, null, Node.ELEMENT_NODE, document);
+  Object.defineProperties(newChild, {
+    ownerDocument: {
+      enumerable: true,
+      writable: false,
+      value: parentNode.ownerDocument
+    }
+  });
 
-  if (tagName === "html") Object.defineProperties(document, {
+  if (parentNode.nodeType === Node.DOCUMENT_NODE
+      && newChild.nodeType === Node.ELEMENT_NODE) Object.defineProperties(parentNode, {
     documentElement: {
       enumerable: true,
       writable: false,
-      value: element
+      value: newChild
     }
   });
 
-  Object.defineProperties(element, elementAliases);
-  Object.defineProperties(element, {
-    namespaceURI: {
-      enumerable: true,
-      writable: false,
-      value: namespaceURI
-    }
-  });
-
-  return element;
-};
-
-exports.appendChild = function(parentNode, newChild) {
   parentNode.appendChild(newChild);
-};
+}
 
-exports.getTagName = function(node) {
+function getTagName(node) {
   return node.tagName;
-};
+}
 
-exports.getNamespaceURI = function(node) {
+function getNamespaceURI(node) {
   return node.namespaceURI;
-};
+}
 
 // TODO concatenate adjacent text nodes
-exports.insertText = function(node, data) {
+function insertText(node, data) {
   var text = Object.create(Text.prototype);
 
-  defineNode(text, "#text", data, Node.TEXT_NODE, document);
+  defineNode(text, "#text", data, Node.TEXT_NODE);
 
   Object.defineProperties(text, {
     data: {
@@ -112,7 +142,7 @@ exports.insertText = function(node, data) {
   });
 
   node.appendChild(text);
-};
+}
 
 function createNamedNodeMap() {
   return Object.create(NamedNodeMap.prototype, {
@@ -139,7 +169,7 @@ function createNodeList(node) {
   return nodeList;
 }
 
-function defineNode(node, nodeName, nodeValue, nodeType, ownerDocument) {
+function defineNode(node, nodeName, nodeValue, nodeType) {
   Object.defineProperties(node, nodeAliases);
   Object.defineProperties(node, {
     nodeName: {
@@ -156,11 +186,6 @@ function defineNode(node, nodeName, nodeValue, nodeType, ownerDocument) {
       enumerable: true,
       writable: false,
       value: nodeType
-    },
-    ownerDocument: {
-      enumerable: true,
-      writable: false,
-      value: ownerDocument
     },
     _children: {
       enumerable: false,

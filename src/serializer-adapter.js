@@ -1,11 +1,11 @@
 var Node = require("./node");
 
-var slice = [].slice;
-
+// TODO NamedNodeMap should support array indexing
 exports.getAttrList = function(node) {
-  return slice.call(node.attributes);
+  return [];
 };
 
+// TODO NodeList should support array indexing
 exports.getChildNodes = function(node) {
   var i = -1,
       n = node.childNodes.length,
