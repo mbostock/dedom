@@ -4,66 +4,59 @@ function Element() {
   throw new TypeError("Illegal constructor");
 }
 
+// readonly attribute  DOMString            tagName;
+
 Element.prototype = Object.create(Node.prototype);
 
-Element.prototype.setAttribute = function(name, value) {
-  throw new Error("not implemented");
-};
-
 Element.prototype.getAttribute = function(name) {
-  throw new Error("not implemented");
+  throw new Error("not yet implemented");
 };
 
-// TODO childNodes should be a NodeList, not an Array
-// TODO various properties should be made read-only?
-
-Element.prototype.removeChild = function(oldChild) {
-  if (oldChild.parentNode !== this) throw new Error;
-  var i = this.childNodes.indexOf(oldChild);
-  this.childNodes.splice(i, 1);
-  if (i === 0) this.firstChild = this.childNodes[0] || null;
-  oldChild.parentNode = null;
-  return oldChild;
+Element.prototype.setAttribute = function(name, value) {
+  throw new Error("not yet implemented");
 };
 
-Element.prototype.appendChild = function(newChild) {
-  if (newChild.parentNode) newChild.parentNode.removeChild(newChild);
-  if (!this.childNodes.length) this.firstChild = newChild;
-  this.childNodes.push(newChild);
-  newChild.parentNode = this;
-  return newChild;
+Element.prototype.removeAttribute = function(name) {
+  throw new Error("not yet implemented");
 };
 
-Element.prototype.insertBefore = function(newChild, refChild) {
-  if (refChild.parentNode !== this) throw new Error;
-  if (newChild.parentNode) newChild.parentNode.removeChild(newChild);
-  var i = this.childNodes.indexOf(refChild);
-  if (i <= 0) this.firstChild = newChild;
-  this.childNodes.splice(i, 0, newChild);
-  newChild.parentNode = this;
-  return newChild;
+Element.prototype.getAttributeNode = function(name) {
+  throw new Error("not yet implemented");
+};
+
+Element.prototype.setAttributeNode = function(newAttr) {
+  throw new Error("not yet implemented");
+};
+
+Element.prototype.removeAttributeNode = function(oldAttr) {
+  throw new Error("not yet implemented");
 };
 
 Element.prototype.getElementsByTagName = function(tagName) {
-  var results = [];
+  throw new Error("not yet implemented");
+  // var results = []; // TODO NodeList
 
-  visitBefore(this, function(element) {
-    if (element.tagName === tagName) {
-      result = element;
-      return false;
-    }
-    return true;
-  });
+  // visitBefore(this, function(element) {
+  //   if (element.tagName === tagName) {
+  //     result = element;
+  //     return false;
+  //   }
+  //   return true;
+  // });
 
-  return result;
+  // return result;
 };
 
-function visitBefore(element, visitor) {
-  if (visitor(element) && element.childNodes) {
-    element.childNodes.forEach(function(child) {
-      visitBefore(child, visitor);
-    });
-  }
-}
+Element.prototype.normalize = function() {
+  throw new Error("not yet implemented");
+};
+
+// function visitBefore(element, visitor) {
+//   if (visitor(element) && element.childNodes) {
+//     element.childNodes.forEach(function(child) {
+//       visitBefore(child, visitor);
+//     });
+//   }
+// }
 
 module.exports = Element;

@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+
+var dedom = require("../");
+
+var chunks = [];
+
+process.stdin.setEncoding("utf8");
+
+process.stdin.on("readable", function() {
+  chunks.push(process.stdin.read());
+});
+
+process.stdin.once("end", function() {
+  var input = chunks.join(),
+      document = dedom.parse(input),
+      output = dedom.serialize(document);
+  console.log(output);
+});

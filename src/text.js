@@ -6,4 +6,8 @@ function Text() {
 
 Text.prototype = Object.create(CharacterData.prototype);
 
+Text.prototype.splitText = function(offset) {
+  throw new Error("not yet implemented");
+};
+
 module.exports = Text;

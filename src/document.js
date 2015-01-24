@@ -7,35 +7,46 @@ function Document() {
   throw new TypeError("Illegal constructor");
 }
 
+// readonly attribute  DocumentType         doctype;
+// readonly attribute  DOMImplementation    implementation;
+// readonly attribute  Element              documentElement;
+
 Document.prototype = Object.create(Node.prototype);
 
-Document.prototype.getElementsByTagName = function(tagName) {
-  return this.documentElement.getElementsByTagName(tagName);
+Document.prototype.createElement = function(tagName) {
+  throw new Error("not yet implemented");
 };
 
-Document.prototype.createElementNS = function(namespaceURI, tagName) {
-  var element = Object.create(Element.prototype);
-  element.nodeName = tagName;
-  element.tagName = tagName;
-  element.namespaceURI = namespaceURI;
-  element.childNodes = [];
-  element.parentNode = null;
-  element.ownerDocument = this;
-  return element;
-};
-
-Document.prototype.createComment = function(data) {
-  var comment = Object.create(Comment.prototype);
-  comment.data = data;
-  comment.ownerDocument = this;
-  return comment;
+Document.prototype.createDocumentFragment = function() {
+  throw new Error("not yet implemented");
 };
 
 Document.prototype.createTextNode = function(data) {
-  var text = Object.create(Text.prototype);
-  text.data = data;
-  text.ownerDocument = this;
-  return text;
+  throw new Error("not yet implemented");
+};
+
+Document.prototype.createComment = function(data) {
+  throw new Error("not yet implemented");
+};
+
+Document.prototype.createCDATASection = function(data) {
+  throw new Error("not yet implemented");
+};
+
+Document.prototype.createProcessingInstruction = function(target, data) {
+  throw new Error("not yet implemented");
+};
+
+Document.prototype.createAttribute = function(name) {
+  throw new Error("not yet implemented");
+};
+
+Document.prototype.createEntityReference = function(name) {
+  throw new Error("not yet implemented");
+};
+
+Document.prototype.getElementsByTagName = function(tagName) {
+  return this.documentElement.getElementsByTagName(tagName);
 };
 
 module.exports = Document;
