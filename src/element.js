@@ -1,6 +1,7 @@
 var secret = require("./secret"),
     Attr = require("./attr"),
-    Node = require("./node");
+    Node = require("./node"),
+    NodeList = require("./node-list");
 
 function Element(_, ownerDocument, name, namespaceURI) {
   Node.call(this, _, ownerDocument, name, null, Node.ELEMENT_NODE);
@@ -42,30 +43,26 @@ prototype.removeAttributeNode = function(oldAttr) {
 };
 
 prototype.getElementsByTagName = function(tagName) {
-  throw new Error("not yet implemented");
-  // var results = []; // TODO NodeList
+  var nodes = [];
 
-  // visitBefore(this, function(element) {
-  //   if (element.tagName === tagName) {
-  //     result = element;
-  //     return false;
-  //   }
-  //   return true;
-  // });
+  (function visit(element) {
+    var child = element.firstChild;
+    while (child) {
+      if (child.tagName === tagName) nodes.push(child);
+      visit(child);
+      child = child.nextSibling;
+    }
+  })(this);
 
-  // return result;
+  return new NodeList(secret, nodes);
 };
 
 prototype.normalize = function() {
   throw new Error("not yet implemented");
 };
 
-// function visitBefore(element, visitor) {
-//   if (visitor(element) && element.childNodes) {
-//     element.childNodes.forEach(function(child) {
-//       visitBefore(child, visitor);
-//     });
-//   }
-// }
+prototype.toString = function() {
+  return "<" + this.nodeName + ">";
+};
 
 module.exports = Element;

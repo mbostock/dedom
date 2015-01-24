@@ -11,8 +11,8 @@ function Node(_, ownerDocument, nodeName, nodeValue, nodeType) {
     _last: {writable: true},
     _next: {writable: true},
     _previous: {writable: true},
-    _children: {value: new NodeList(_, this)},
     _attributes: {value: new NamedNodeMap(_)},
+    childNodes: {value: new NodeList(_, [])},
     nodeName: {enumerable: true, value: nodeName},
     nodeValue: {enumerable: true, value: nodeValue}, // TODO this should be writable (sometimes)!
     nodeType: {enumerable: true, value: nodeType},
@@ -35,7 +35,6 @@ Node.NOTATION_NODE = 12;
 
 var prototype = Node.prototype = Object.create(Object.prototype, {
   parentNode: {get: function() { return this._parent; }},
-  childNodes: {get: function() { return this._children; }},
   firstChild: {get: function() { return this._first; }},
   lastChild: {get: function() { return this._last; }},
   nextSibling: {get: function() { return this._next; }},
@@ -55,6 +54,7 @@ prototype.replaceChild = function(newChild, oldChild) {
 
 prototype.removeChild = function(oldChild) {
   if (oldChild._parent !== this) throw new DOMException(secret, DOMException.HIERARCHY_REQUEST_ERR);
+  this.childNodes._nodes.splice(this.childNodes._nodes.indexOf(oldChild), 1);
   if (oldChild._previous) oldChild._previous._next = oldChild._next; else this._first = oldChild._next;
   if (oldChild._next) oldChild._next._previous = oldChild._previous; else this._last = oldChild._previous;
   oldChild._previous = oldChild._next = oldChild._parent = null;
@@ -67,6 +67,7 @@ prototype.appendChild = function(newChild) {
   if (newChild._previous = this._last) this._last._next = newChild;
   if (!this._first) this._first = newChild;
   this._last = newChild;
+  this.childNodes._nodes.push(newChild);
   return newChild;
 };
 
@@ -76,6 +77,10 @@ prototype.hasChildNodes = function() {
 
 prototype.cloneNode = function(deep) {
   throw new Error("not yet implemented");
+};
+
+prototype.toString = function() {
+  return this.nodeName;
 };
 
 module.exports = Node;
