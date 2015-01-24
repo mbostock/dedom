@@ -46,9 +46,17 @@ prototype.getElementsByTagName = function(tagName) {
   var nodes = [],
       child = this.firstChild;
 
-  while (child) {
+  out: while (child) {
     if (child.tagName === tagName) nodes.push(child);
-    child = child.firstChild || child.nextSibling || child.parentNode && child.parentNode.nextSibling;
+    if (child.firstChild) child = child.firstChild;
+    else if (child.nextSibling) child = child.nextSibling;
+    else {
+      do {
+        child = child.parentNode;
+        if (child === this) break out;
+      } while (!child.nextSibling);
+      child = child.nextSibling;
+    }
   }
 
   return new NodeList(secret, nodes);
