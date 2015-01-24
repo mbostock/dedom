@@ -43,16 +43,13 @@ prototype.removeAttributeNode = function(oldAttr) {
 };
 
 prototype.getElementsByTagName = function(tagName) {
-  var nodes = [];
+  var nodes = [],
+      child = this.firstChild;
 
-  (function visit(element) {
-    var child = element.firstChild;
-    while (child) {
-      if (child.tagName === tagName) nodes.push(child);
-      visit(child);
-      child = child.nextSibling;
-    }
-  })(this);
+  while (child) {
+    if (child.tagName === tagName) nodes.push(child);
+    child = child.firstChild || child.nextSibling || child.parentNode && child.parentNode.nextSibling;
+  }
 
   return new NodeList(secret, nodes);
 };
