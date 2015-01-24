@@ -1,4 +1,5 @@
 var secret = require("./secret"),
+    nwmatcher = require("../lib/nwmatcher/nwmatcher-noqsa"),
     Attr = require("./attr"),
     Node = require("./node"),
     NodeList = require("./node-list");
@@ -11,6 +12,7 @@ function Element(_, ownerDocument, name, namespaceURI) {
 }
 
 var prototype = Element.prototype = Object.create(Node.prototype, {
+  id: {get: function() { return this.getAttribute("id"); }},
   tagName: {get: function() { return this.nodeName; }}
 });
 
@@ -42,12 +44,45 @@ prototype.removeAttributeNode = function(oldAttr) {
   throw new Error("not yet implemented");
 };
 
+prototype.querySelector = function(selector) {
+  return matcher(this).first(selector, this);
+};
+
+prototype.querySelectorAll = function(selector) {
+  throw new Error("not yet implemented");
+};
+
+// TODO restrict to just Element types
+prototype.getElementById = function(id) {
+  var child = this.firstChild;
+
+  id += "";
+
+  out: while (child) {
+    if (child.id === id) return child;
+    if (child.firstChild) child = child.firstChild;
+    else if (child.nextSibling) child = child.nextSibling;
+    else {
+      do {
+        child = child.parentNode;
+        if (child === this) break out;
+      } while (!child.nextSibling);
+      child = child.nextSibling;
+    }
+  }
+
+  return null;
+};
+
+// TODO restrict to just Element types
 prototype.getElementsByTagName = function(tagName) {
   var nodes = [],
       child = this.firstChild;
 
+  tagName += "";
+
   out: while (child) {
-    if (child.tagName === tagName) nodes.push(child);
+    if (tagName === "*" || child.tagName === tagName) nodes.push(child);
     if (child.firstChild) child = child.firstChild;
     else if (child.nextSibling) child = child.nextSibling;
     else {
@@ -69,5 +104,14 @@ prototype.normalize = function() {
 prototype.toString = function() {
   return "<" + this.nodeName + ">";
 };
+
+function matcher(element) {
+  var document = element.ownerDocument,
+      matcher = document._matcher;
+  if (matcher) return matcher;
+  matcher = nwmatcher({document: document});
+  Object.defineProperty(document, "_matcher", {value: matcher});
+  return matcher;
+}
 
 module.exports = Element;

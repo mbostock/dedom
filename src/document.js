@@ -11,7 +11,7 @@ var secret = require("./secret"),
     Text = require("./text");
 
 function Document(_, name, publicId, systemId) {
-  Node.call(this, _, "#document", null, Node.DOCUMENT_NODE);
+  Node.call(this, _, this, "#document", null, Node.DOCUMENT_NODE);
   Object.defineProperties(this, {
     doctype: {value: new DocumentType(_, this, name, publicId, systemId)},
     implementation: new DOMImplementation(_)
@@ -33,8 +33,12 @@ var prototype = Document.prototype = Object.create(Node.prototype, {
 
 prototype.constructor = Document;
 
-prototype.createElement = function(tagName) {
+prototype.addEventListener = function() { // needed for nwmatcher IE9 check
   throw new Error("not yet implemented");
+};
+
+prototype.createElement = function(tagName) {
+  return new Element(secret, this, tagName, this.documentElement.namespaceURI);
 };
 
 prototype.createElementNS = function(namespaceURI, qualifiedName) {
@@ -71,6 +75,18 @@ prototype.createEntityReference = function(name) {
 
 prototype.getElementsByTagName = function(tagName) {
   return this.documentElement.getElementsByTagName(tagName);
+};
+
+prototype.getElementById = function(id) {
+  return this.documentElement.getElementById(id);
+};
+
+prototype.querySelector = function(selector) {
+  return this.documentElement.querySelector(selector);
+};
+
+prototype.querySelectorAll = function(selector) {
+  return this.documentElement.querySelectorAll(selector);
 };
 
 module.exports = Document;

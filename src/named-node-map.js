@@ -13,6 +13,7 @@ var prototype = NamedNodeMap.prototype = Object.create(Object.prototype, {
 
 prototype.constructor = NamedNodeMap;
 
+// TODO This should be made faster.
 prototype.getNamedItem = function(name) {
   var node,
       i = -1,
